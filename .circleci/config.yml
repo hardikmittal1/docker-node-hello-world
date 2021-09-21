@@ -1,0 +1,47 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+
+orbs:
+  node: circleci/node@4.1
+  gcp-gcr: circleci/gcp-gcr@0.13.0
+jobs:
+  example-job:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: Build app binary and Docker image
+          command:
+            |
+            echo 'export PATH=~$PATH:~/.local/bin' >> $BASH_ENV
+            echo ${GCP_PROJECT_KEY} | base64 --decode --ignore-garbage > $HOME/gcloud-service-key.json
+            echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
+            echo 'export TAG=${CIRCLE_SHA1}' >> $BASH_ENV
+            echo 'export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME' >> $BASH_ENV
+      - gcp-gcr/build-image:
+          docker-context: . 
+          google-project-id: GOOGLE_PROJECT_ID 
+          image: cimg/base 
+          registry-url: us.gcr.io 
+          tag: latest 
+      - gcp-gcr/gcr-auth:
+          google-project-id: GOOGLE_PROJECT_ID 
+          google-compute-zone: GOOGLE_COMPUTE_ZONE 
+          gcloud-service-key: GCP_PROJECT_KEY 
+      - gcp-gcr/push-image:
+          registry-url: us.gcr.io 
+          image: cimg/base:stable 
+          google-project-id: GOOGLE_PROJECT_ID 
+          tag: latest 
+
+workflows:
+  sample:
+    jobs:
+      - node/test:
+          version: '15.1'
+          # This is the node version to use for the `cimg/node` tag
+          # Relevant tags can be found on the CircleCI Developer Hub
+          # https://circleci.com/developer/images/image/cimg/node
+      - example-job:
+         context: gcp
