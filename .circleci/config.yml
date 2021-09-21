@@ -36,7 +36,6 @@ jobs:
           registry-url: us.gcr.io 
           image: cimg/base:stable 
           google-project-id: GOOGLE_PROJECT_ID 
-          tag: latest 
 workflows:
   sample:
     jobs:
