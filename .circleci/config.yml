@@ -34,7 +34,7 @@ jobs:
           gcloud-service-key: GCP_PROJECT_KEY
       - gcp-gcr/push-image:
           registry-url: us.gcr.io 
-          image: cimg/base:stable 
+          image: cimg/base
           google-project-id: GOOGLE_PROJECT_ID 
 workflows:
   sample:
