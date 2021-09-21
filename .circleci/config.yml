@@ -31,7 +31,7 @@ jobs:
       - gcp-gcr/gcr-auth:
           google-project-id: GOOGLE_PROJECT_ID 
           google-compute-zone: GOOGLE_COMPUTE_ZONE 
-          gcloud-service-key: GCP_CLOUD_KEYS 
+          gcloud-service-key: GCP_PROJECT_KEY
       - gcp-gcr/push-image:
           registry-url: us.gcr.io 
           image: cimg/base:stable 
